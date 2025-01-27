@@ -71,7 +71,7 @@ router.post("/", postController.criarPost);
  *       400:
  *         description: Erro ao incrementar curtida
  */
-router.post("/:id/curtir", postController.incrementarCurtida);
+router.post("/:id/curtir", postController.curtirPost);
 
 /**
  * @swagger

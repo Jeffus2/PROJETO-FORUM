@@ -82,16 +82,17 @@ const postController = {
       res.status(400).json({ mensagem: error.message });
     }
   },
-  incrementarCurtida: async (req, res) => {
+  curtirPost: async (req, res) => {
     try {
-      const { id } = req.params;
-      const resultado = await postService.incrementarCurtida(id);
-      if (resultado.error) {
+      const id = req.params.id;
+      const usuario_id = req.query.usuario_id;
+      const resultado = await postService.curtirPost(id, usuario_id);
+      if (!resultado) {
         return res
           .status(500)
-          .json({ status: "ERROR", message: resultado.error });
+          .json({ status: "ERROR", message: "Erro ao curtir post" });
       }
-      res.status(204).json({ resultado });
+      res.status(200).json({ resultado });
     } catch (error) {
       res.status(400).json({ mensagem: error.message });
     }

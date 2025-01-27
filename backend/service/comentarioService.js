@@ -1,5 +1,6 @@
 const Comentario = require("../model/Comentarios");
 const Usuarios = require("../model/Usuarios");
+const Curtidas = require("../model/Curtidas");
 
 const comentarioService = {
   criarComentario: async (titulo, conteudo, usuario_id, post_id) => {
@@ -11,14 +12,36 @@ const comentarioService = {
     });
     return comentario;
   },
-  curtirComentario: async (id) => {
-    const comentario = await Comentario.findByPk(id);
-    if (comentario) {
+  curtirComentario: async (id, usuario_id) => {
+    try {
+      const comentario = await Comentario.findByPk(id);
+      if (!comentario) {
+        return null;
+      }
+      const curtida = await Curtidas.findOne({
+        where: {
+          tipo: "comentario",
+          referencia_id: id,
+          usuario_id: usuario_id,
+        },
+      });
+      if (curtida) {
+        await curtida.destroy();
+        comentario.qtd_curtidas -= 1;
+        await comentario.save();
+        return comentario;
+      }
+      await Curtidas.create({
+        tipo: "comentario",
+        referencia_id: id,
+        usuario_id: usuario_id,
+      });
       comentario.qtd_curtidas += 1;
-      comentario.save();
+      await comentario.save();
       return comentario;
+    } catch (error) {
+      return { error };
     }
-    return null;
   },
   timelineComentarios: async (post_id, columm, order, page) => {
     const offset = (page - 1) * 10;

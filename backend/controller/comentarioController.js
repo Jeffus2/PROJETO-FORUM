@@ -25,11 +25,14 @@ const comentarioController = {
   },
   curtirComentario: async (req, res) => {
     try {
-      const resultado = await comentarioService.curtirComentario(req.params.id);
-      if (resultado.error) {
+      const resultado = await comentarioService.curtirComentario(
+        req.params.id,
+        req.query.usuario_id
+      );
+      if (!resultado) {
         return res
           .status(500)
-          .json({ status: "ERROR", message: resultado.error });
+          .json({ status: "ERROR", message: "Erro ao curtir comentário" });
       }
       res.status(204).json(resultado);
     } catch (error) {

@@ -1,20 +1,18 @@
-const { Sequelize } = require("sequelize");
+const Sequelize = require("sequelize");
 const dontenv = require("dotenv");
+const config = require("./config.json").development;
 
 dontenv.config();
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
+  config.database,
+  config.username,
+  config.password,
   {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dialect: "mysql",
-    logging: false,
+    host: config.host,
+    dialect: config.dialect,
   }
 );
-
 
 const startDatabase = async () => {
   try {

@@ -1,8 +1,8 @@
 const { where } = require("sequelize");
 const Posts = require("../model/Posts");
 const Usuarios = require("../model/Usuarios");
+const Curtidas = require("../model/Curtidas");
 const validator = require("validator");
-const Usuario = require("../model/Usuarios");
 
 const postService = {
   criarPost: async (titulo, conteudo, usuario_id) => {
@@ -115,14 +115,34 @@ const postService = {
       return { error: "erro ao exibir post" };
     }
   },
-  incrementarCurtida: async (id) => {
-    const post = await Posts.findByPk(id);
-    if (post) {
+  curtirPost: async (id, usuario_id) => {
+    console.log(id, usuario_id);
+    try {
+      const post = await Posts.findByPk(id);
+      console.log(post);
+      if (!post) {
+        return { error: "Post não encontrado" };
+      }
+      const curtida = await Curtidas.findOne({
+        where: { tipo: "post", referencia_id: id, usuario_id: usuario_id },
+      });
+      if (curtida) {
+        await curtida.destroy();
+        post.qtd_curtidas -= 1;
+        await post.save();
+        return post;
+      }
+      await Curtidas.create({
+        tipo: "post",
+        referencia_id: id,
+        usuario_id: usuario_id,
+      });
       post.qtd_curtidas += 1;
       await post.save();
       return post;
+    } catch (error) {
+      return { error };
     }
-    return null;
   },
   deletarPost: async (id) => {
     try {

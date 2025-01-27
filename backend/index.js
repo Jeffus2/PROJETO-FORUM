@@ -3,16 +3,21 @@ const cors = require("cors");
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const sequelize = require("./config/databaseconfig.js");
-const { expressjwt: jwt } = require("express-jwt");
+//const { expressjwt: jwt } = require("express-jwt");
 const usuarioRouter = require("./router/usuarioRouter");
 const postRouter = require("./router/postRouter");
+const curtidaRouter = require("./router/curtidaRouter");
 const comentarioRouter = require("./router/comentarioRouter");
 const dontenv = require("dotenv");
+const Usuarios = require("./model/Usuarios");
+const Comentario = require("./model/Comentarios");
+const Curtidas = require("./model/Curtidas");
+const Post = require("./model/Posts");
 
 dontenv.config();
 
 const app = express();
-const port = 3000;
+const port = 3333;
 
 sequelize.authenticate().then(() => {
   console.log("Conectado ao banco de dados");
@@ -41,23 +46,24 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-const JWTSecret = process.env.JWT_SECRET;
+//const JWTSecret = process.env.JWT_SECRET;
 
 app.use(express.json());
 app.use(cors());
 
-app.use(
-  jwt({
-    secret: JWTSecret,
-    algorithms: ["HS256"],
-  }).unless({
-    path: ["/usuarios/cadastrar", "/usuarios/login", "api-docs"],
-  })
-);
+// app.use(
+//   jwt({
+//     secret: JWTSecret,
+//     algorithms: ["HS256"],
+//   }).unless({
+//     path: ["/usuarios/cadastrar", "/usuarios/login", "api-docs"],
+//   })
+//);
 
 app.use("/usuarios", usuarioRouter);
 app.use("/posts", postRouter);
 app.use("/comentarios", comentarioRouter);
+app.use("/curtidas", curtidaRouter);
 
 app.get("/", (req, res) => {
   res.send("Rodando na porta 3000");
