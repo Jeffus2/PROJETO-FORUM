@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-//import { loginUsuario } from "@/service/usuarioService";
+import { loginUsuario } from "@/service/usuarioService";
 
 import {
   IconButton,
@@ -27,17 +27,26 @@ export default function Login() {
   const router = useRouter();
 
   const logar = async () => {
-    // const resposta = await loginUsuario({ email, senha });
-    // if (resposta.error) {
-    //   setNotification({
-    //     open: true,
-    //     message: resposta.error,
-    //     severity: "error",
-    //   });
-    //   return;
-    // }
-    // localStorage.setItem("token", resposta.token);
-    // localStorage.setItem("usuario", JSON.stringify(resposta.usuario));
+    if (!email || !senha) {
+      setNotification({
+        open: true,
+        message: "Preencha todos os campos",
+        severity: "error",
+      });
+      return;
+    }
+    alert(`email: ${email}, senha: ${senha}`);
+    const resposta = await loginUsuario({ email, senha });
+    if (resposta.error) {
+      setNotification({
+        open: true,
+        message: resposta.error,
+        severity: "error",
+      });
+      return;
+    }
+    //localStorage.setItem("token", resposta.token);
+    localStorage.setItem("usuario", JSON.stringify(resposta.usuario));
 
     setNotification({
       open: true,
@@ -65,9 +74,10 @@ export default function Login() {
       <Box
         textAlign="center"
         mt={8}
-        color={"black"}
-        bgcolor={"#fff"}
+        color={"#fff"}
+        bgcolor={"#333"}
         borderRadius={8}
+        boxShadow={4}
         p={4}
       >
         <Typography variant="h3">Login</Typography>

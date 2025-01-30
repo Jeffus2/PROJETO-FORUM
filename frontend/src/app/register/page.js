@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import validator from "validator";
-//import { registrarUsuario } from "@/service/usuarioService";
+import { registrarUsuario } from "@/service/usuarioService";
 
 import {
   IconButton,
@@ -31,16 +31,7 @@ export default function Register() {
 
   const router = useRouter();
 
-  const handleMostrarSenha = (e) => {};
-
   const registrar = async () => {
-    if (!nome || !email || !senha || !confirmarSenha || !nickname) {
-      setNotification({
-        open: true,
-        message: "Preencha todos os campos",
-        severity: "error",
-      });
-    }
     if (nome.trim().length < 3 || !validator.isAlpha(nome.replace(" ", ""))) {
       setNotification({
         open: true,
@@ -94,26 +85,35 @@ export default function Register() {
       return;
     }
 
-    // const response = await registrarUsuario(nome, email, senha, nickname);
-    // if (response.error) {
-    //   setNotification({
-    //     open: true,
-    //     message: response.error,
-    //     severity: "error",
-    //   });
-    //   return;
-    // }
+    try {
+      const response = await registrarUsuario({ nome, email, senha, nickname });
+      if (response.error) {
+        setNotification({
+          open: true,
+          message: response.error,
+          severity: "error",
+        });
+        return;
+      }
 
-    setNotification({
-      open: true,
-      message: "Cadastro realizado com sucesso",
-      severity: "success",
-    });
-    setTimeout(() => router.push("/"), 2000);
+      setNotification({
+        open: true,
+        message: "Cadastro realizado com sucesso",
+        severity: "success",
+      });
+      setTimeout(() => router.push("/"), 2000);
+    } catch (error) {
+      setNotification({
+        open: true,
+        message: "Erro ao cadastrar",
+        severity: "error",
+      });
+      return;
+    }
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" onSubmit={registrar}>
       <Snackbar open={notification.open} autoHideDuration={6000}>
         <Alert
           severity={notification.severity}
@@ -127,9 +127,10 @@ export default function Register() {
       <Box
         textAlign="center"
         mt={8}
-        color={"black"}
-        bgcolor={"#fff"}
+        color={"#fff"}
+        bgcolor={"#333"}
         borderRadius={8}
+        boxShadow={4}
         p={4}
       >
         <Typography variant="h4">Cadastro</Typography>
@@ -185,6 +186,7 @@ export default function Register() {
           color="primary"
           size="large"
           onClick={registrar}
+          onSubmit={registrar}
         >
           Cadastrar
         </Button>

@@ -2,14 +2,16 @@ const usuarioService = require("../service/usuarioService");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const dontenv = require("dotenv");
+const JWTSecret = require("../config/config.json").jwtSecret;
 
 dontenv.config();
 
-const JWTSecret = process.env.JWT_SECRET_CONTROLLER;
+//const JWTSecret = "a8fj93$%ksJklsd0Fjs9Psd8fKj@93jfK2Ssd8fLKs!d9Fj0sk3L9Fk";
 
 const usuarioController = {
   criarUsuario: async (req, res) => {
     try {
+      console.log(req.body);
       const senhaCriptografada = await bcrypt.hash(req.body.senha, 10);
       const resultado = await usuarioService.criarUsuario({
         ...req.body,
@@ -33,15 +35,15 @@ const usuarioController = {
       const compararSenhas = await bcrypt.compare(senha, usuario.senha);
 
       if (usuario && compararSenhas) {
-        const token = jwt.sign({ id: usuario.id }, JWTSecret, {
-          expiresIn: "1h",
+        const token = jwt.sign({ id: usuario.id }, JWTSecret.SECRET_KEY, {
+          expiresIn: "3h",
         });
         return res.status(200).json({ usuario, token });
       } else {
         return res.status(401).json({ message: "email ou senha invalido" });
       }
     } catch (error) {
-      res.status(400).json({ status: "ERROR", message: resultado.error });
+      res.status(400).json({ status: "ERROR", message: error });
     }
   },
   editarUsuario: async (req, res) => {

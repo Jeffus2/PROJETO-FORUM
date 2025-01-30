@@ -1,10 +1,10 @@
 import axio from "axios";
 
-const linkAPI = `https://improved-space-disco-wr5v4g75rw5rh96j5-3000.app.github.dev/`;
+const linkAPI = `https://super-doodle-g45jrp74jw672w67j-3333.app.github.dev/`;
 
 export const registrarUsuario = async (dados) => {
   try {
-    const resposta = await axio.post(`${linkAPI}/usuarios/cadastrar`, dados);
+    const resposta = await axio.post(`${linkAPI}usuarios/cadastrar`, dados);
     return resposta.data;
   } catch (error) {
     return { error: error.message };
@@ -13,7 +13,7 @@ export const registrarUsuario = async (dados) => {
 
 export const loginUsuario = async (dados) => {
   try {
-    const resposta = await axio.post(`${linkAPI}/usuarios/login`, dados);
+    const resposta = await axio.post(`${linkAPI}usuarios/login`, dados);
     return resposta.data;
   } catch (error) {
     return { error: error.message };

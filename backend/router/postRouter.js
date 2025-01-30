@@ -1,5 +1,6 @@
 const express = require("express");
 const postController = require("../controller/postController.js");
+const verifyJWT = require("../middleware/auth.js");
 
 const router = express.Router();
 
@@ -191,7 +192,7 @@ router.get("/:id", postController.exibirPost);
  *       400:
  *         description: Erro ao atualizar post
  */
-router.put("/:id", postController.editarPost);
+router.put("/:id", verifyJWT, postController.editarPost);
 
 /**
  * @swagger
@@ -212,6 +213,6 @@ router.put("/:id", postController.editarPost);
  *       400:
  *         description: Erro ao deletar post
  */
-router.delete("/:id", postController.deletarPost);
+router.delete("/:id", verifyJWT, postController.deletarPost);
 
 module.exports = router;

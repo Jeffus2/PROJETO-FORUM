@@ -1,6 +1,7 @@
 const express = require("express");
 const usuarioController = require("../controller/usuarioController.js");
 const multer = require("multer");
+const verifyJWT = require("../middleware/auth.js");
 
 const router = express.Router();
 const upload = multer();
@@ -164,7 +165,7 @@ router.get("/:id", usuarioController.usuario);
  *       400:
  *         description: Erro na atualização
  */
-router.put("/:id", usuarioController.editarUsuario);
+router.put("/:id", verifyJWT, usuarioController.editarUsuario);
 
 /**
  * @swagger
@@ -198,6 +199,7 @@ router.put("/:id", usuarioController.editarUsuario);
 router.put(
   "/:id/avatar",
   upload.single("avatar"),
+  verifyJWT,
   usuarioController.uploadAvatar
 );
 
@@ -220,6 +222,6 @@ router.put(
  *       400:
  *         description: Erro ao deletar usuário
  */
-router.delete("/:id", usuarioController.deletarUsuario);
+router.delete("/:id", verifyJWT, usuarioController.deletarUsuario);
 
 module.exports = router;

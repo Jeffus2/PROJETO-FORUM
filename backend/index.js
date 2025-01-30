@@ -4,15 +4,12 @@ const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const sequelize = require("./config/databaseconfig.js");
 //const { expressjwt: jwt } = require("express-jwt");
+//const jwt = require("jasonwebtoken");
 const usuarioRouter = require("./router/usuarioRouter");
 const postRouter = require("./router/postRouter");
 const curtidaRouter = require("./router/curtidaRouter");
 const comentarioRouter = require("./router/comentarioRouter");
 const dontenv = require("dotenv");
-const Usuarios = require("./model/Usuarios");
-const Comentario = require("./model/Comentarios");
-const Curtidas = require("./model/Curtidas");
-const Post = require("./model/Posts");
 
 dontenv.config();
 
@@ -46,7 +43,7 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-//const JWTSecret = process.env.JWT_SECRET;
+//const JWTSecret = "minhasenha";
 
 app.use(express.json());
 app.use(cors());
@@ -58,7 +55,7 @@ app.use(cors());
 //   }).unless({
 //     path: ["/usuarios/cadastrar", "/usuarios/login", "api-docs"],
 //   })
-//);
+// );
 
 app.use("/usuarios", usuarioRouter);
 app.use("/posts", postRouter);
@@ -84,7 +81,14 @@ usuario modelo:
 "email":"jeffson@gmail.com",
 "senha": "jeff123!",
 "nickname": "Jeffao"
+} 
+post modelo:
+{
+"titulo": "Meu primeiro post",
+"conteudo": "Esse é o conteúdo do meu primeiro post",
+"usuario_id": 1
 }
+
 {
   "nome": "João Silva",
   "email": "joao@email.com",
