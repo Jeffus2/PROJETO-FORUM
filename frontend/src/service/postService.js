@@ -22,3 +22,24 @@ export const timelinePosts = async (filter) => {
     return { error: error.message };
   }
 };
+
+export const timelinePostsMaisCurtidos = async (filter) => {
+  try {
+    const { order, limit, where, page } = filter;
+    const resposta = await axios.get(`${linkAPI}/timeline`, {
+      params: {
+        column: "qtd_curtidas",
+        order: order,
+        limit: limit,
+        where: where,
+        page: page,
+      },
+      // headers: {
+      //   Authorization: `Bearer ${localStorage.getItem("token")}`,
+      // },
+    });
+    return resposta.data;
+  } catch (error) {
+    return { error: error.message };
+  }
+};

@@ -1,10 +1,9 @@
 import * as React from "react";
-import { Container } from "@mui/material";
-import { Link } from "next/link";
-import { Box } from "@mui/material";
-import SvgIcon from "@mui/material/SvgIcon";
+import { SvgIcon, Avatar, Container } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import Home from "@/app/home/page";
 import "./index.css";
+import { loginUsuario } from "@/service/usuarioService";
 
 function HomeIcon(props) {
   return (
@@ -14,12 +13,17 @@ function HomeIcon(props) {
   );
 }
 
-export default function NavBar() {
+export default function NavBar({ nome }) {
   return (
     <header>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <Container>
         <HomeIcon fontSize="large" />
-      </nav>
+      </Container>
+      <Container sx={{ marginLeft: "123vh", marginTop: "-30px" }}>
+        <Avatar className="avatar" sx={{}}>
+          {nome[0].toUpperCase()}
+        </Avatar>
+      </Container>
     </header>
   );
 }

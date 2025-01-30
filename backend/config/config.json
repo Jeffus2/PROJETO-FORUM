@@ -19,5 +19,8 @@
     "database": "expressdb",
     "host": "localhost",
     "dialect": "mysql"
+  },
+  "jwtSecret": {
+    "SECRET_KEY": "amoroblox"
   }
 }

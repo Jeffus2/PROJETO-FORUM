@@ -35,32 +35,42 @@ export default function Login() {
       });
       return;
     }
-    alert(`email: ${email}, senha: ${senha}`);
-    const resposta = await loginUsuario({ email, senha });
-    if (resposta.error) {
+    try {
+      const resposta = await loginUsuario({ email, senha });
+      if (resposta.error) {
+        setNotification({
+          open: true,
+          message: `email e/ou senha invalido`,
+          severity: "error",
+        });
+        return;
+      }
+      localStorage.setItem("token", JSON.stringify(resposta.token));
+      localStorage.setItem("usuario", JSON.stringify(resposta.usuario));
+
+      const usuario = JSON.parse(localStorage.getItem("usuario"));
+
       setNotification({
         open: true,
-        message: resposta.error,
+        message: `Bem vindo ${usuario.nome}`,
+        severity: "success",
+      });
+
+      setTimeout(() => router.push("/home"), 2000);
+    } catch (error) {
+      setNotification({
+        open: true,
+        message: `Erro ${error.message}`,
         severity: "error",
       });
-      return;
     }
-    //localStorage.setItem("token", resposta.token);
-    localStorage.setItem("usuario", JSON.stringify(resposta.usuario));
-
-    setNotification({
-      open: true,
-      message: `Bem vindo`,
-      severity: "success",
-    });
-
-    setTimeout(() => router.push("/home"), 2000);
   };
 
   return (
     <Container maxWidth="sm">
       <Snackbar
         open={notification.open}
+        variant={"filled"}
         autoHideDuration={6000}
         onClose={() => setNotification({ ...notification, open: false })}
       >

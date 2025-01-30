@@ -4,20 +4,13 @@ import PostsMaisCurtidos from "@/components/PostsMaisCurtidos";
 import Timeline from "@/components/Timeline";
 import CreatePostButton from "@/components/CreatePostButton";
 import NavBar from "@/components/NavBar";
-import { timelinePosts } from "@/service/postService";
+import {
+  timelinePosts,
+  timelinePostsMaisCurtidos,
+} from "@/service/postService";
 
 import "./index.css";
-import {
-  IconButton,
-  Button,
-  TextField,
-  Typography,
-  Link,
-  Box,
-  Container,
-  Snackbar,
-  Alert,
-} from "@mui/material";
+import { Container, Skeleton } from "@mui/material";
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
@@ -43,14 +36,13 @@ export default function Home() {
 
   const buscaPostsMaisCurtidos = async () => {
     setFilter({
-      column: "qtd_curtidas",
       order: "DESC",
       limit: 5,
       where: null,
       page: 1,
     });
     try {
-      const resposta = await timelinePosts(filter);
+      const resposta = await timelinePostsMaisCurtidos(filter);
       setPostMaisCurtidos(resposta);
     } catch (error) {
       alert(error);
@@ -64,70 +56,47 @@ export default function Home() {
     buscaPosts();
     buscaPostsMaisCurtidos();
   }, []);
-
+  const nome = JSON.parse(localStorage.getItem("usuario")).nome;
   return (
     <>
-      <NavBar />
-      <Container
-        className="home"
-        maxWidth="ls"
-        sx={{
-          flexDirection: "row",
-          height: "100vh",
-        }}
-      >
-        <Container
-          className="home-post-mais-curtidos"
-          sx={{
-            maxWidth: "20%",
-            borderRadius: "10px",
-            marginTop: "8vh",
-            marginLeft: "-3vh",
-            padding: "1vh",
-            maxHeight: "50%",
-          }}
-        >
-          {!loading && postMaisCurtidos.length > 0 && (
+      <NavBar nome={nome} />
+      <Container className="home" maxWidth="ls">
+        <Container className="home-post-mais-curtidos">
+          {!loading && postMaisCurtidos.length > 0 ? (
             <PostsMaisCurtidos posts={postMaisCurtidos} />
+          ) : (
+            <Skeleton
+              sx={{
+                width: "230px",
+                height: "310px",
+                marginLeft: "-5vh",
+                marginTop: "0.3vh",
+                borderRadius: "26px",
+                padding: "1vh",
+              }}
+            />
           )}
         </Container>
-        <Container
-          className="home-timeline"
-          sx={{
-            marginTop: "5vh",
-            marginRight: "1vh",
-            borderRadius: "10px",
-            padding: "1vh",
-          }}
-        >
-          <Timeline posts={posts} />{" "}
+        <Container className="home-timeline">
+          {!loading && posts.length > 0 ? (
+            <Timeline posts={posts} />
+          ) : (
+            <Skeleton
+              sx={{
+                width: "206.5%",
+                height: "240px",
+                marginLeft: "-17vh",
+                marginTop: "-0.7vh",
+                borderRadius: "26px",
+                padding: "1vh",
+              }}
+            />
+          )}
         </Container>
-        <Container
-          className="home-create-post-button"
-          sx={{
-            width: "10%",
-            borderRadius: "10px",
-            marginTop: "75vh",
-            marginLeft: "80%",
-            marginBottom: "20vh",
-            padding: "1vh",
-            mb: 5,
-            maxHeight: "10vh",
-
-            position: "fixed",
-          }}
-        >
+        <Container className="home-create-post-button">
           <CreatePostButton />
         </Container>
       </Container>
-      {/* 
-      Criar post 
-      {
-      "titulo": "titulo",
-      "conteudo": "conteudo",
-      "usuario_id": 1
-      }
-      */}
     </>
   );
 }
