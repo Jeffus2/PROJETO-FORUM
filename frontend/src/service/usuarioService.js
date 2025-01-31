@@ -1,6 +1,6 @@
 import axio from "axios";
 
-const linkAPI = `https://super-doodle-g45jrp74jw672w67j-3333.app.github.dev/`;
+const linkAPI = `https://3333-codeanywhere-templates-e-53an7exilj.app.codeanywhere.com/`;
 
 export const registrarUsuario = async (dados) => {
   try {

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const linkAPI = `https://super-doodle-g45jrp74jw672w67j-3333.app.github.dev/posts`;
+const linkAPI = `https://3333-codeanywhere-templates-e-53an7exilj.app.codeanywhere.com/posts`;
 
 export const timelinePosts = async (filter) => {
   try {
@@ -38,6 +38,24 @@ export const timelinePostsMaisCurtidos = async (filter) => {
       //   Authorization: `Bearer ${localStorage.getItem("token")}`,
       // },
     });
+    return resposta.data;
+  } catch (error) {
+    return { error: error.message };
+  }
+};
+
+export const getPost = async (id) => {
+  try {
+    const resposta = await axios.get(`${linkAPI}/${id}`);
+    return resposta.data;
+  } catch (error) {
+    return { error: error.message };
+  }
+};
+
+export const qtd_posts = async (usuario_id) => {
+  try {
+    const resposta = await axios.get(`${linkAPI}/${usuario_id}/accPosts`);
     return resposta.data;
   } catch (error) {
     return { error: error.message };

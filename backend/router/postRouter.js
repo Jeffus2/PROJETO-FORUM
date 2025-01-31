@@ -215,4 +215,6 @@ router.put("/:id", verifyJWT, postController.editarPost);
  */
 router.delete("/:id", verifyJWT, postController.deletarPost);
 
+router.get("/:usuario_id/accPosts", postController.qtdPosts);
+
 module.exports = router;

@@ -1,10 +1,13 @@
 import "./index.css";
+import { useRouter } from "next/navigation";
 import {
   Container,
   Card,
   CardActionArea,
   CardContent,
   Typography,
+  appBarClasses,
+  Avatar,
 } from "@mui/material";
 
 export default function Timeline({ posts }) {
@@ -16,12 +19,14 @@ export default function Timeline({ posts }) {
   //     .join(", ")
   // );
 
+  const router = useRouter();
+
   return (
     <>
       <Container
         sx={{
-          width: "260%",
-          marginLeft: "-20vh",
+          width: "150%",
+          marginLeft: "-40vh",
           marginTop: "5vh",
           borderRadius: "10px",
           padding: "1vh",
@@ -43,9 +48,14 @@ export default function Timeline({ posts }) {
               marginBottom: "2vh",
             }}
           >
-            <CardActionArea>
+            <CardActionArea
+              onClick={() => {
+                router.push("/post/" + post.id, 2000);
+              }}
+            >
               <CardContent>
                 <Typography variant="h5" component="h2">
+                  <Avatar>{post.Usuario.nickname[0]}</Avatar>
                   {post.Usuario.nickname}
                 </Typography>
                 <Card

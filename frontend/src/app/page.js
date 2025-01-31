@@ -110,7 +110,12 @@ export default function Login() {
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
         />
-        <Button variant="contained" color="primary" onClick={logar}>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          onClick={logar}
+        >
           Entrar
         </Button>
         <br></br>

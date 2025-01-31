@@ -41,14 +41,15 @@ const postService = {
       return { error: error.message };
     }
   }, //[timeline] "/" | GET: param(filtro) | 200: {[]} (posts, apelido e avatar do usuario)
-  timelinePosts: async (column, order, limit = 10, where = {}, page) => {
+  timelinePosts: async (column, order, limit = 10, where, page) => {
     const offset = (page - 1) * 10;
+    const filtro = !where ? null : (where = { usuario_id: where });
     try {
       const posts = await Posts.findAll({
         order: [[column, order]],
         limit: limit,
         offset: offset,
-        where: where,
+        where: filtro,
         include: [
           {
             model: Usuarios,
@@ -56,7 +57,6 @@ const postService = {
           },
         ],
       });
-
       return posts;
     } catch (error) {
       return { error: error.message };
@@ -162,7 +162,8 @@ const postService = {
     }
     try {
       const accPostsUsuario = await Posts.count({ where: { usuario_id } });
-      return accPostsUsuario;
+      const convert = { acc: accPostsUsuario };
+      return convert;
     } catch (error) {
       return { error: error.message };
     }

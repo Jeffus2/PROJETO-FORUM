@@ -1,5 +1,6 @@
 import * as React from "react";
-import { SvgIcon, Avatar, Container } from "@mui/material";
+import { SvgIcon, Avatar, Container, Fab } from "@mui/material";
+import { useRouter } from "next/navigation";
 import SearchIcon from "@mui/icons-material/Search";
 import Home from "@/app/home/page";
 import "./index.css";
@@ -13,16 +14,34 @@ function HomeIcon(props) {
   );
 }
 
-export default function NavBar({ nome }) {
+const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+export default function NavBar() {
+  const router = useRouter();
   return (
     <header>
-      <Container>
-        <HomeIcon fontSize="large" />
+      <Container sx={{ marginTop: "5px" }}>
+        <Fab
+          size="small"
+          onClick={() => {
+            router.push("/home", 2000);
+          }}
+        >
+          <HomeIcon fontSize="large" />
+        </Fab>
       </Container>
-      <Container sx={{ marginLeft: "123vh", marginTop: "-30px" }}>
-        <Avatar className="avatar" sx={{}}>
-          {nome[0].toUpperCase()}
-        </Avatar>
+      <Container sx={{ marginLeft: "123vh", marginTop: "-39px" }}>
+        <Fab
+          color="default"
+          size="small"
+          onClick={() => {
+            router.push("/profile/" + usuario.id, 2000);
+          }}
+        >
+          <Avatar className="avatar" sx={{}}>
+            {usuario.nickname[0].toUpperCase()}
+          </Avatar>
+        </Fab>
       </Container>
     </header>
   );

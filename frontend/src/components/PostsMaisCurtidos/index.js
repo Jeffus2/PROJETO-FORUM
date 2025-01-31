@@ -1,7 +1,16 @@
 import { ThumbUpAlt } from "@mui/icons-material";
-import { Container, Card, CardContent, Typography, Box } from "@mui/material";
+import {
+  Container,
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  CardActionArea,
+} from "@mui/material";
+import { useRouter } from "next/navigation";
 
 export default function PostsMaisCurtidos({ posts }) {
+  const router = useRouter();
   return (
     <>
       <Container
@@ -20,7 +29,7 @@ export default function PostsMaisCurtidos({ posts }) {
             sx={{
               marginLeft: "-8vh",
               marginButtom: "5vh",
-              width: "30vh",
+              width: "35vh",
               padding: "0.5vh",
               backgroundColor: "#333",
               color: "white",
@@ -46,13 +55,26 @@ export default function PostsMaisCurtidos({ posts }) {
                     marginRight: 0.2,
                   }}
                 >
-                  <Typography
-                    sx={{ marginLeft: 1, fontSize: 15 }}
-                    textAlign={"initial"}
+                  <CardActionArea
+                    onClick={() => {
+                      router.push(`/post/${post.id}`, 2000);
+                    }}
                   >
-                    <ThumbUpAlt></ThumbUpAlt>
-                    {post.qtd_curtidas} {post.titulo}
-                  </Typography>
+                    <Box display={"flex"}>
+                      <Typography
+                        sx={{ marginLeft: 1, fontSize: 15 }}
+                        textAlign={"initial"}
+                      >
+                        <ThumbUpAlt sx={{ marginTop: "0px" }}></ThumbUpAlt>
+                      </Typography>
+                      <Typography>
+                        {post.qtd_curtidas}{" "}
+                        {post.titulo.length > 23
+                          ? post.titulo.substring(0, 23) + "..."
+                          : post.titulo}
+                      </Typography>
+                    </Box>
+                  </CardActionArea>
                 </Card>
               ))}
             </Box>

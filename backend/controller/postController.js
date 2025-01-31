@@ -19,7 +19,7 @@ const postController = {
       const column = req.query.column || "createdAt";
       const order = req.query.order || "DESC";
       const limit = parseInt(req.query.limit) || 10;
-      const where = req.query.where ? JSON.parse(req.query.where) : {};
+      const where = req.query.where ? JSON.parse(req.query.where) : null;
       const page = parseInt(req.query.page) || 1;
 
       const posts = await postService.timelinePosts(
@@ -93,6 +93,15 @@ const postController = {
           .json({ status: "ERROR", message: "Erro ao curtir post" });
       }
       res.status(200).json({ resultado });
+    } catch (error) {
+      res.status(400).json({ mensagem: error.message });
+    }
+  },
+  qtdPosts: async (req, res) => {
+    try {
+      const resultado = await postService.qtdPosts(req.params.usuario_id);
+
+      res.status(200).json(resultado);
     } catch (error) {
       res.status(400).json({ mensagem: error.message });
     }

@@ -11,6 +11,7 @@ import {
 
 import "./index.css";
 import { Container, Skeleton } from "@mui/material";
+import UpdateModal from "@/components/UpdateModal";
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
@@ -23,7 +24,7 @@ export default function Home() {
       column: "created_at",
       order: "desc",
       limit: 10,
-      where: "",
+      where: null,
       page: 1,
     });
     try {
@@ -56,10 +57,16 @@ export default function Home() {
     buscaPosts();
     buscaPostsMaisCurtidos();
   }, []);
+
   const nome = JSON.parse(localStorage.getItem("usuario")).nome;
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <>
-      <NavBar nome={nome} />
+      <NavBar />
+        
       <Container className="home" maxWidth="ls">
         <Container className="home-post-mais-curtidos">
           {!loading && postMaisCurtidos.length > 0 ? (
@@ -83,18 +90,15 @@ export default function Home() {
           ) : (
             <Skeleton
               sx={{
-                width: "206.5%",
-                height: "240px",
-                marginLeft: "-17vh",
+                width: "66.5vh",
+                height: "270px",
+                marginLeft: "-35vh",
                 marginTop: "-0.7vh",
                 borderRadius: "26px",
                 padding: "1vh",
               }}
             />
           )}
-        </Container>
-        <Container className="home-create-post-button">
-          <CreatePostButton />
         </Container>
       </Container>
     </>
