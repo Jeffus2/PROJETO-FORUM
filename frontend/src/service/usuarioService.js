@@ -19,3 +19,16 @@ export const loginUsuario = async (dados) => {
     return { error: error.message };
   }
 };
+
+export const updateDadosUsuario = async (id, dados) => {
+  try {
+    const resposta = await axio.put(`${linkAPI}usuarios/${id}`, dados, {
+      headers: {
+        Authorization: `${localStorage.getItem("token")}`,
+      },
+    });
+    return resposta.data;
+  } catch (error) {
+    return { error: error.message };
+  }
+};

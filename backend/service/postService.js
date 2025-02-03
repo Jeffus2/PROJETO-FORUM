@@ -162,8 +162,8 @@ const postService = {
     }
     try {
       const accPostsUsuario = await Posts.count({ where: { usuario_id } });
-      const convert = { acc: accPostsUsuario };
-      return convert;
+
+      return accPostsUsuario;
     } catch (error) {
       return { error: error.message };
     }

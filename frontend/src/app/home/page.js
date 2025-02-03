@@ -11,7 +11,7 @@ import {
 
 import "./index.css";
 import { Container, Skeleton } from "@mui/material";
-import UpdateModal from "@/components/UpdateModal";
+
 
 export default function Home() {
   const [posts, setPosts] = useState([]);

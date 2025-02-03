@@ -1,12 +1,15 @@
+"use client"
+import React,{useState} from "react";
+
 import { Avatar, Container, Typography, Button } from "@mui/material";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { IconButton, Stack } from "@mui/material/";
 import EditIcon from "@mui/icons-material/Edit";
-import UpdateModal from "@/components/UpdateModal";
 
 
-export default function DadosUsuarios({acc,open,onClose}) {
+
+export default function DadosUsuarios() {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const data = new Date(usuario.createdAt);
   const dataFormatada = format(data, "dd'/'MM'/'yyyy, 'ás' HH:mm", {
@@ -47,7 +50,7 @@ export default function DadosUsuarios({acc,open,onClose}) {
         >
           {usuario.nickname[0].toUpperCase()}
         </Avatar>
-        <Typography sx={{marginLeft:"40px"}}><strong>Post: {acc}</strong></Typography>
+        <Typography sx={{marginLeft:"40px"}}><strong>Post: {usuario.qtd_posts}</strong></Typography>
       </Container>
       <Container
         sx={{

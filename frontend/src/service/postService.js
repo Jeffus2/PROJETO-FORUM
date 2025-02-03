@@ -53,9 +53,52 @@ export const getPost = async (id) => {
   }
 };
 
-export const qtd_posts = async (usuario_id) => {
+export const createPost = async (post) => {
   try {
-    const resposta = await axios.get(`${linkAPI}/${usuario_id}/accPosts`);
+    const resposta = await axios.post(`${linkAPI}/`, post, {
+      headers: {
+        Authorization: `${localStorage.getItem("token")}`,
+      },
+    });
+    return resposta.data;
+  } catch (error) {
+    return { error: error.message };
+  }
+};
+
+export const updatePost = async (post) => {
+  try {
+    const resposta = await axios.put(`${linkAPI}/${post.id}`, post, {
+      headers: {
+        Authorization: `${localStorage.getItem("token")}`,
+      },
+    });
+    return resposta.data;
+  } catch (error) {
+    return { error: error.message };
+  }
+};
+
+export const deletePost = async (id) => {
+  try {
+    const resposta = await axios.delete(`${linkAPI}/${id}`, {
+      headers: {
+        Authorization: `${localStorage.getItem("token")}`,
+      },
+    });
+    return resposta.data;
+  } catch (error) {
+    return { error: error.message };
+  }
+};
+
+export const curtirPost = async (id, usuario_id) => {
+  try {
+    const resposta = await axios.put(`${linkAPI}/${id}/curtir/`,{
+      params:{
+        usuario_id: usuario_id
+      }
+    });
     return resposta.data;
   } catch (error) {
     return { error: error.message };

@@ -2,11 +2,10 @@ const comentarioService = require("../service/comentarioService");
 
 const comentarioController = {
   criarComentario: async (req, res) => {
-    const { titulo, conteudo, usuario_id, post_id } = req.body;
+    const {  conteudo, usuario_id, post_id } = req.body;
 
     try {
       const comentario = await comentarioService.criarComentario(
-        titulo,
         conteudo,
         usuario_id,
         post_id

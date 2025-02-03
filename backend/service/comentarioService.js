@@ -3,9 +3,8 @@ const Usuarios = require("../model/Usuarios");
 const Curtidas = require("../model/Curtidas");
 
 const comentarioService = {
-  criarComentario: async (titulo, conteudo, usuario_id, post_id) => {
+  criarComentario: async (conteudo, usuario_id, post_id) => {
     const comentario = await Comentario.create({
-      titulo,
       conteudo,
       usuario_id,
       post_id,

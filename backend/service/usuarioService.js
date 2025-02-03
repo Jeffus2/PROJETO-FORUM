@@ -2,6 +2,7 @@ const validator = require("validator");
 const Usuario = require("../model/Usuarios");
 
 const postService = require("./postService");
+const Post = require("../model/Posts");
 
 const usuarioService = {
   criarUsuario: async ({ nome, email, senha, nickname }) => {
@@ -66,6 +67,10 @@ const usuarioService = {
       if (usuario.senha !== senha) {
         return { error: "Senha incorreta" };
       }
+      usuario.qtd_posts = await Post.count({
+        where: { usuario_id: usuario.id },
+      });
+      console.log(qtd_posts);
       return usuario;
     } catch (error) {
       return { error: error.message };
@@ -172,7 +177,13 @@ const usuarioService = {
     return deletar;
   },
   obterUsuario: async (email) => {
-    return await Usuario.findOne({ where: { email } });
+    const usuario = await Usuario.findOne({ where: { email } });
+    if (!usuario) {
+      return { error: "Usuário não encontrado" };
+    }
+    usuario.dataValues.qtd_posts = await postService.qtdPosts(usuario.id);
+    console.log(usuario);
+    return usuario;
   },
 };
 

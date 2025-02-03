@@ -2,12 +2,26 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getPost } from "@/service/postService";
-import { Typography } from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import NavBar from "@/components/NavBar";
+import OnePost from "@/components/OnePost";
+import CreateComentario from "@/components/CreateComentario";
+import TimelineComentarios from "@/components/TimelineComentarios";
+import { timelineComentarios } from "@/service/comentarioService";
 
 export default function ViewPost() {
   const { id } = useParams();
   const [post, setPost] = useState({});
+  const [comentarios, setComentarios] = useState([]);
+
+  const fetchTimelineComentarios = async () => {
+    try {
+      const resposta = await timelineComentarios(id);
+      setComentarios(resposta);
+    } catch (error) {
+      alert(error);
+    }
+  };
 
   const buscarPost = async () => {
     const resposta = await getPost(id);
@@ -15,15 +29,23 @@ export default function ViewPost() {
   };
 
   useEffect(() => {
-    buscarPost();
+    if (id) {
+      buscarPost();
+      fetchTimelineComentarios(id);
+    }
   }, []);
 
   return (
     <div>
       <NavBar />
-      <h1>View Post</h1>
-      <Typography>usuario: {post.Usuario?.nickname}</Typography>
-      <p>titulo: {post.titulo}</p>
+      <Container
+        className="tela"
+        sx={{ display: "flex", flexDirection: "column" }}
+      >
+        <OnePost post={post} />
+        <CreateComentario />
+        <TimelineComentarios comentarios={comentarios} />
+      </Container>
     </div>
   );
 }
