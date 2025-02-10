@@ -2,7 +2,6 @@ const Curtidas = require("../model/Curtidas");
 
 const curtidaService = {
   obterCurtida: async (tipo, referencia_id, usuario_id) => {
-    console.log(tipo, referencia_id, usuario_id);
     if (!tipo || !referencia_id || !usuario_id) {
       return { error: "Dados insuficientes" };
     }

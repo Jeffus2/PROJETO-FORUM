@@ -1,13 +1,15 @@
 const jwt = require("jsonwebtoken");
-const SECRET_KEY = require("../config/config.json").jwtSecret;
+const jwtSecret = require("../config/config.json").jwtSecret;
 
 const verifyJWT = (req, res, next) => {
   const token = req.headers["authorization"];
   if (!token) {
-    req.status(401).json({ message: "Token não informado" });
+    res.status(401).json({ message: "Token não informado" });
   }
 
-  jwt.verify(token, SECRET_KEY, function (err, decoded) {
+  const tokenFormatado = token.split(" ")[1];
+
+  jwt.verify(tokenFormatado, jwtSecret.SECRET_KEY, function (err, decoded) {
     if (err) {
       return res
         .status(500)

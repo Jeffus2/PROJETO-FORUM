@@ -19,17 +19,17 @@ export default function Perfil() {
     page: 1,
   });
 
-  const buscaPosts = async (id) => {
+  const buscaPosts = async () => {
     try {
-      const resposta = await timelinePosts(filter);
+      const resposta = await timelinePosts(id, filter);
       setPosts(resposta);
     } catch (error) {
-      alert(error);
+      console.log(error);
     }
   };
 
   useEffect(() => {
-    buscaPosts(id);
+    buscaPosts();
   }, []);
 
   //const id = JSON.parse(localStorage.getItem("usuario")).id;
@@ -37,6 +37,7 @@ export default function Perfil() {
   return (
     <div>
       <NavBar />
+      <CreatePostButton />
       <DadosUsuarios />
       <Container
         className="timel-perfil"

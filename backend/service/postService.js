@@ -1,4 +1,3 @@
-const { where } = require("sequelize");
 const Posts = require("../model/Posts");
 const Usuarios = require("../model/Usuarios");
 const Curtidas = require("../model/Curtidas");
@@ -41,7 +40,7 @@ const postService = {
       return { error: error.message };
     }
   }, //[timeline] "/" | GET: param(filtro) | 200: {[]} (posts, apelido e avatar do usuario)
-  timelinePosts: async (column, order, limit = 10, where, page) => {
+  timelinePosts: async (usuario_id, column, order, limit = 10, where, page) => {
     const offset = (page - 1) * 10;
     const filtro = !where ? null : (where = { usuario_id: where });
     try {
@@ -55,6 +54,12 @@ const postService = {
             model: Usuarios,
             attributes: ["nickname", "avatar"],
           },
+          {
+            model: Curtidas,
+            attributes: ["id"],
+            where: { usuario_id },
+            required: false,
+          },
         ],
       });
       return posts;
@@ -63,36 +68,36 @@ const postService = {
     }
   },
   editarPost: async (id, titulo, conteudo, usuario_id) => {
-    const post = await Posts.findByPk(id);
-
-    if (!titulo && !conteudo) {
-      return { error: "Preencha ao menos um campo para atualizar" };
-    }
-
-    if (!(await Posts.findByPk(id))) return { error: "Post não encontrado" };
-
-    if (!titulo && !conteudo && !usuario_id) {
-      return { error: "Preencha ao menos um campo para atualizar" };
-    }
-
-    if (titulo.length < 3) return { error: "Titulo inválido" };
-
-    if (conteudo.length < 10) return { error: "Conteudo inválido" };
-
-    if (titulo.length > 100 || conteudo.length > 500)
-      return { error: "Tamanho máximo de caracteres excedido" };
-
-    const usuario = await Usuarios.findOne();
-    if (!usuario) {
-      return { error: "Usuário não encontrado" };
-    }
-
-    if (post.usuario_id !== usuario_id)
-      return { error: "Usuário não autorizado" };
-
     try {
-      const post = await Posts.update({ titulo, conteudo }, { where: { id } });
-      if (!post) {
+      const post = await Posts.findByPk(id);
+
+      if (!titulo && !conteudo) {
+        return { error: "Preencha ao menos um campo para atualizar" };
+      }
+
+      if (!(await Posts.findByPk(id))) return { error: "Post não encontrado" };
+
+      if (!titulo && !conteudo && !usuario_id) {
+        return { error: "Preencha ao menos um campo para atualizar" };
+      }
+
+      if (titulo.length < 3) return { error: "Titulo inválido" };
+
+      if (conteudo.length < 10) return { error: "Conteudo inválido" };
+
+      if (titulo.length > 100 || conteudo.length > 500)
+        return { error: "Tamanho máximo de caracteres excedido" };
+
+      const usuario = await Usuarios.findOne();
+      if (!usuario) {
+        return { error: "Usuário não encontrado" };
+      }
+
+      if (post.usuario_id !== usuario_id)
+        return { error: "Usuário não autorizado" };
+
+      post.update({ titulo, conteudo }, { where: { id } });
+      if (!post || post.error) {
         return { error: "Erro ao atualizar post" };
       }
       return post;
@@ -100,15 +105,23 @@ const postService = {
       return { error: error.message };
     }
   },
-  exibirPost: async (id) => {
+  exibirPost: async (id, usuario_id) => {
     if (!id) return { error: "id invalido" };
     try {
       const post = await Posts.findOne({
         where: { id: id },
-        include: {
-          model: Usuarios,
-          attributes: ["nickname", "avatar"],
-        },
+        include: [
+          {
+            model: Usuarios,
+            attributes: ["nickname", "avatar"],
+          },
+          {
+            model: Curtidas,
+            attributes: ["id"],
+            where: { usuario_id },
+            required: false,
+          },
+        ],
       });
       return post;
     } catch (error) {
@@ -116,12 +129,12 @@ const postService = {
     }
   },
   curtirPost: async (id, usuario_id) => {
-    console.log(id, usuario_id);
     try {
+      const usuario = await Usuarios.findByPk(usuario_id);
       const post = await Posts.findByPk(id);
-      console.log(post);
-      if (!post) {
-        return { error: "Post não encontrado" };
+
+      if (!post || !usuario) {
+        return { error: `Post ou usuario não encontrado` };
       }
       const curtida = await Curtidas.findOne({
         where: { tipo: "post", referencia_id: id, usuario_id: usuario_id },

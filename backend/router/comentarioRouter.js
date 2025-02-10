@@ -1,5 +1,6 @@
 const express = require("express");
 const comentarioController = require("../controller/comentarioController");
+const verifyJWT = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -56,7 +57,7 @@ const router = express.Router();
  *       400:
  *         description: Erro ao criar comentário
  */
-router.post("/", comentarioController.criarComentario);
+router.post("/", verifyJWT, comentarioController.criarComentario);
 /**
  * @swagger
  * /comentarios/{id}/curtir:
@@ -76,7 +77,7 @@ router.post("/", comentarioController.criarComentario);
  *       400:
  *         description: Erro ao curtir comentário
  */
-router.post("/:id/curtir", comentarioController.curtirComentario);
+router.post("/:id/curtir", verifyJWT, comentarioController.curtirComentario);
 /**
  * @swagger
  * /comentarios/{post_id}:
@@ -133,7 +134,7 @@ router.post("/:id/curtir", comentarioController.curtirComentario);
  *       400:
  *         description: Erro ao listar comentários
  */
-router.get("/:post_id", comentarioController.timelineComentarios);
+router.get("/:post_id", verifyJWT, comentarioController.timelineComentarios);
 /**
  * @swagger
  * /comentarios/{id}:
@@ -153,6 +154,6 @@ router.get("/:post_id", comentarioController.timelineComentarios);
  *       400:
  *         description: Erro ao deletar comentário
  */
-router.delete("/:id", comentarioController.deletarComentario);
+router.delete("/:id", verifyJWT, comentarioController.deletarComentario);
 
 module.exports = router;

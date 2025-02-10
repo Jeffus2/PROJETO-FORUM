@@ -12,8 +12,8 @@ export default function CreatePostButton() {
 
   return (
     <div className="create-post-button">
-      <Container sx={{ marginTop: 70, position:"fixed" }}>
-        <Fab>
+      <Container sx={{ left: "120vh", marginTop: 70, position: "fixed" }}>
+        <Fab onClick={handleClick}>
           <Typography fontSize={50} marginTop={-0.7}>
             <strong>+</strong>
           </Typography>

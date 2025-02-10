@@ -51,8 +51,9 @@ const router = express.Router();
  *       400:
  *         description: Erro de validação
  */
-router.post("/", postController.criarPost);
+router.post("/", verifyJWT, postController.criarPost);
 
+//{"nome":"Jeffson","email":"jeffson1@gmail.com","senha":"Jeff123!","nickname":"Jeffao","profissao":"Dev"}
 /**
  * @swagger
  * /posts/{id}/curtir:
@@ -72,7 +73,7 @@ router.post("/", postController.criarPost);
  *       400:
  *         description: Erro ao incrementar curtida
  */
-router.post("/:id/curtir", postController.curtirPost);
+router.post("/:id/curtir/:usuario_id", verifyJWT, postController.curtirPost);
 
 /**
  * @swagger
@@ -138,7 +139,7 @@ router.post("/:id/curtir", postController.curtirPost);
  *       400:
  *         description: Erro ao buscar posts
  */
-router.get("/timeline", postController.timelinePosts);
+router.get("/:usuario_id/timeline", verifyJWT, postController.timelinePosts);
 /**
  * @swagger
  * /posts/{id}:
@@ -158,7 +159,7 @@ router.get("/timeline", postController.timelinePosts);
  *       400:
  *         description: Post não encontrado
  */
-router.get("/:id", postController.exibirPost);
+router.get("/:id", verifyJWT, postController.exibirPost);
 
 /**
  * @swagger

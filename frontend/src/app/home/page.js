@@ -12,8 +12,8 @@ import {
 import "./index.css";
 import { Container, Skeleton } from "@mui/material";
 
-
 export default function Home() {
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
   const [posts, setPosts] = useState([]);
   const [postMaisCurtidos, setPostMaisCurtidos] = useState([]);
   const [filter, setFilter] = useState({});
@@ -28,10 +28,10 @@ export default function Home() {
       page: 1,
     });
     try {
-      const resposta = await timelinePosts(filter);
+      const resposta = await timelinePosts(usuario.id, filter);
       setPosts(resposta);
     } catch (error) {
-      alert(error);
+      console.log(error);
     }
   };
 
@@ -43,10 +43,10 @@ export default function Home() {
       page: 1,
     });
     try {
-      const resposta = await timelinePostsMaisCurtidos(filter);
+      const resposta = await timelinePostsMaisCurtidos(usuario.id, filter);
       setPostMaisCurtidos(resposta);
     } catch (error) {
-      alert(error);
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -58,7 +58,6 @@ export default function Home() {
     buscaPostsMaisCurtidos();
   }, []);
 
-  const nome = JSON.parse(localStorage.getItem("usuario")).nome;
   const handleClose = () => {
     setOpen(false);
   };
@@ -66,7 +65,7 @@ export default function Home() {
   return (
     <>
       <NavBar />
-        
+      <CreatePostButton />
       <Container className="home" maxWidth="ls">
         <Container className="home-post-mais-curtidos">
           {!loading && postMaisCurtidos.length > 0 ? (

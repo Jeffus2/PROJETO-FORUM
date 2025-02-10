@@ -122,7 +122,7 @@ router.post("/login", usuarioController.logarUsuario);
  *       400:
  *         description: Usuário não encontrado
  */
-router.get("/:id", usuarioController.usuario);
+router.get("/:id", verifyJWT, usuarioController.usuario);
 
 /**
  * @swagger
@@ -199,7 +199,6 @@ router.put("/:id", verifyJWT, usuarioController.editarUsuario);
 router.put(
   "/:id/avatar",
   upload.single("avatar"),
-  verifyJWT,
   usuarioController.uploadAvatar
 );
 

@@ -3,7 +3,8 @@ const Usuarios = require("../model/Usuarios");
 const Curtidas = require("../model/Curtidas");
 
 const comentarioService = {
-  criarComentario: async (conteudo, usuario_id, post_id) => {
+  criarComentario: async (conteudoJson) => {
+    const { conteudo, usuario_id, post_id } = conteudoJson;
     const comentario = await Comentario.create({
       conteudo,
       usuario_id,
@@ -13,28 +14,12 @@ const comentarioService = {
   },
   curtirComentario: async (id, usuario_id) => {
     try {
+      console.log(id, usuario_id);
       const comentario = await Comentario.findByPk(id);
       if (!comentario) {
         return null;
       }
-      const curtida = await Curtidas.findOne({
-        where: {
-          tipo: "comentario",
-          referencia_id: id,
-          usuario_id: usuario_id,
-        },
-      });
-      if (curtida) {
-        await curtida.destroy();
-        comentario.qtd_curtidas -= 1;
-        await comentario.save();
-        return comentario;
-      }
-      await Curtidas.create({
-        tipo: "comentario",
-        referencia_id: id,
-        usuario_id: usuario_id,
-      });
+      console.log("bateu aqui");
       comentario.qtd_curtidas += 1;
       await comentario.save();
       return comentario;
@@ -42,15 +27,15 @@ const comentarioService = {
       return { error };
     }
   },
-  timelineComentarios: async (post_id, columm, order, page) => {
+  timelineComentarios: async (post_id, page) => {
     const offset = (page - 1) * 10;
 
     try {
       const comentarios = await Comentario.findAll({
-        order: [[columm, order]],
+        order: [["createdAt", "DESC"]],
         limit: 10,
         offset: offset,
-        where: post_id,
+        where: { post_id },
         include: [
           {
             model: Usuarios,
@@ -58,7 +43,6 @@ const comentarioService = {
           },
         ],
       });
-
       return comentarios;
     } catch (error) {
       return { error: error };

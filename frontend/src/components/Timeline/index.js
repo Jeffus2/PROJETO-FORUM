@@ -1,28 +1,90 @@
+"use client";
 import "./index.css";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
+  ButtonBase,
   Container,
   Card,
   CardActionArea,
   CardContent,
   Typography,
-  appBarClasses,
   Avatar,
+  Box,
+  IconButton,
+  Alert,
+  Snackbar,
 } from "@mui/material";
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
+import dayjs from "dayjs";
+import { curtirPost } from "@/service/postService";
 
 export default function Timeline({ posts }) {
-  // alert(
-  //   posts
-  //     .map((element) => {
-  //       element.titulo;
-  //     })
-  //     .join(", ")
-  // );
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+  const [notification, setNotification] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   const router = useRouter();
 
+  const [postStates, setPostStates] = useState(
+    posts.map((post) => ({
+      id: post.id,
+      qtdCurtidas: post.qtd_curtidas,
+      curtido: post.Curtidas.length > 0,
+    }))
+  );
+
+  const formatarData = (dataDoPost) => {
+    return dayjs(dataDoPost).format("HH:mm - DD/MM/YY");
+  };
+
+  const handleCurtidaIcon = async (postId) => {
+    try {
+      setPostStates((prevState) =>
+        prevState.map((post) =>
+          post.id === postId
+            ? {
+                ...post,
+                curtido: !post.curtido,
+                qtdCurtidas: post.curtido
+                  ? post.qtdCurtidas - 1
+                  : post.qtdCurtidas + 1,
+              }
+            : post
+        )
+      );
+
+      const resultado = await curtirPost(postId, usuario.id);
+      if (resultado.error)
+        setNotification({
+          open: true,
+          message: "Erro ao curtir o post",
+          severity: "error",
+        });
+    } catch (error) {
+      setNotification({
+        open: true,
+        message: "Erro ao curtir o post",
+        severity: "error",
+      });
+    }
+  };
+
   return (
     <>
+      <Snackbar open={notification.open} autoHideDuration={6000}>
+        <Alert
+          severity={notification.severity}
+          onClose={() => setNotification({ ...notification, open: false })}
+          variant="filled"
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
       <Container
         sx={{
           width: "150%",
@@ -32,94 +94,108 @@ export default function Timeline({ posts }) {
           padding: "1vh",
         }}
       >
-        {posts.map((post) => (
-          <Card
-            key={post.id}
-            className="timeline"
-            variant="outlined"
-            sx={{
-              width: "85%",
+        {posts.map((post) => {
+          // Garantir que o objeto encontrado não é undefined
+          const postState =
+            postStates.find((state) => state.id === post.id) || {};
+          const { curtido = false, qtdCurtidas = 0 } = postState;
 
-              backgroundColor: "#333",
-              color: "white",
-
-              borderRadius: "24px",
-              boxShadow: "1px 0px 5px -1px #000",
-              marginBottom: "2vh",
-            }}
-          >
-            <CardActionArea
-              onClick={() => {
-                router.push("/post/" + post.id, 2000);
-              }}
-            >
-              <CardContent>
-                <Typography variant="h5" component="h2">
-                  <Avatar>{post.Usuario.nickname[0]}</Avatar>
-                  {post.Usuario.nickname}
-                </Typography>
-                <Card
-                  sx={{
-                    backgroundColor: "#232328",
-                    color: "white",
-                    borderRadius: 2,
-                  }}
-                >
-                  <Typography variant="h5" component="h2" marginLeft={"3%"}>
-                    {post.titulo}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="white"
-                    component="p"
-                    marginLeft={"3%"}
-                  >
-                    {post.conteudo}
-                  </Typography>
-                  <Typography textAlign="end" marginRight={"3%"}>
-                    Likes {post.qtd_curtidas}
-                  </Typography>
-                </Card>
-              </CardContent>
-            </CardActionArea>
-            {/*<Card
-        className="timeline"
-        variant="outlined"
-        sx={{
-          width: "100%",
-          padding: "0.5vh",
-          backgroundColor: "#333",
-          color: "white",
-          border: "1.5px solid #444",
-          borderRadius: "7px",
-          boxShadow: "1px 0px 5px 0px #000",
-        }}
-      >
-        <CardActionArea>
-          <CardContent>
-            <Box>
-              <Typography variant="h5" component="div">
-                {posts.Usuario.nickname}
-              </Typography>
-            </Box>
-            <Box>
-              <Typography variant="h6">{posts.titulo}</Typography>
-              <Typography variant="body2" color="white">
-                {posts.conteudo}
-              </Typography>
-            </Box>
-            <Typography
+          return (
+            <Card
+              key={post.id}
+              className="timeline"
+              variant="outlined"
               sx={{
-                textAlign: "right",
+                width: "85%",
+                backgroundColor: "#333",
+                color: "white",
+                borderRadius: "24px",
+                boxShadow: "1px 0px 5px -1px #000",
+                marginBottom: "2vh",
               }}
             >
-              Likes: {posts.qtd_curitdas}
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-      </Card> */}
-          </Card>
-        ))}
+              <ButtonBase
+                onClick={() => {
+                  router.push("/post/" + post.id, 2000);
+                }}
+                sx={{
+                  display: "block",
+                  textAlign: "inherit",
+                  width: "100%",
+                  borderRadius: "24px",
+                }}
+              >
+                <CardContent>
+                  <Box display={"flex"} justifyContent={"space-between"}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "-moz-initial",
+                        flexDirection: "row",
+                      }}
+                    >
+                      <Avatar
+                        sx={{
+                          marginBottom: "1vh",
+                        }}
+                      >
+                        {post.Usuario.nickname[0]}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="h5" component="h2" marginLeft={1}>
+                          {post.Usuario.nickname}
+                        </Typography>
+                        <Typography marginLeft={1} marginTop={-1}>
+                          {formatarData(post.createdAt)}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                  <Card
+                    sx={{
+                      backgroundColor: "#232328",
+                      color: "white",
+                      borderRadius: 2,
+                    }}
+                  >
+                    <Typography variant="h5" component="h2" marginLeft={"3%"}>
+                      {post.titulo}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="white"
+                      component="p"
+                      marginLeft={"3%"}
+                    >
+                      {post.conteudo}
+                    </Typography>
+
+                    <Box
+                      display={"flex"}
+                      flexDirection={"row"}
+                      sx={{ justifyContent: "end" }}
+                    >
+                      <IconButton
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleCurtidaIcon(post.id);
+                        }}
+                      >
+                        {curtido ? (
+                          <Favorite color="error" />
+                        ) : (
+                          <FavoriteBorder color="error" />
+                        )}
+                      </IconButton>
+                      <Typography marginRight={"3%"}>{qtdCurtidas}</Typography>
+                    </Box>
+                  </Card>
+                </CardContent>
+              </ButtonBase>
+            </Card>
+          );
+        })}
       </Container>
     </>
   );

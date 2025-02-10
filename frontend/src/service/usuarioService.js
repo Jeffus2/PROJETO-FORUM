@@ -1,6 +1,10 @@
 import axio from "axios";
+import { parse } from "date-fns";
 
-const linkAPI = `https://3333-codeanywhere-templates-e-53an7exilj.app.codeanywhere.com/`;
+const linkAPI = `https://miniature-carnival-x597p4v57q47c69x5-3333.app.github.dev/`;
+//`https://3333-codeanywhere-templates-e-53an7exilj.app.codeanywhere.com/`;
+
+const token = JSON.parse(localStorage.getItem("token"));
 
 export const registrarUsuario = async (dados) => {
   try {
@@ -24,7 +28,7 @@ export const updateDadosUsuario = async (id, dados) => {
   try {
     const resposta = await axio.put(`${linkAPI}usuarios/${id}`, dados, {
       headers: {
-        Authorization: `${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return resposta.data;

@@ -1,4 +1,5 @@
 const validator = require("validator");
+const bcrypt = require("bcrypt");
 const Usuario = require("../model/Usuarios");
 
 const postService = require("./postService");
@@ -70,59 +71,65 @@ const usuarioService = {
       usuario.qtd_posts = await Post.count({
         where: { usuario_id: usuario.id },
       });
-      console.log(qtd_posts);
+
       return usuario;
     } catch (error) {
       return { error: error.message };
     }
   },
-  editarUsuario: async (id, nome, email, senha, nickname, profissao) => {
-    if (!nome && !email && !senha && !nickname && !profissao) {
-      return { error: "Preencha ao menos um campo para atualizar" };
-    }
-
-    if (!(await Usuario.findByPk(id)))
-      return { error: "Usuário não encontrado" };
-    if (!nome && !email && !senha && !nickname && !profissao) {
-      return { error: "Preencha ao menos um campo para atualizar" };
-    }
-
-    if ((nome && nome.length < 3) || !validator.isAlpha(nome))
-      return { error: "Nome inválido" };
-
-    if (
-      !validator.isEmail(
-        email
-      ) /*||(await Usuario.findOne({ where: { email } }))*/
-    )
-      return {
-        error: "Email invalido",
-      };
-
-    if (profissao.length < 1) return { error: "Profissão inválida" };
-
-    if (
-      !validator.isStrongPassword(senha, {
-        minLength: 8,
-        minLowercase: 1,
-        minUppercase: 1,
-        minNumbers: 3,
-        minSymbols: 1,
-      })
-    )
-      return { error: "Senha fraca" };
-
-    if (
-      nickname.length < 3 /*||await Usuario.findOne({ where: { nickname } })*/
-    )
-      return { error: "Nickname invalido" };
-
-    const usuario = await Usuario.findByPk(id);
+  editarUsuario: async (id, novosDados) => {
     try {
+      const { nome, email, senha, nickname, profissao } = novosDados;
+
+      if (!nome && !email && !nickname) {
+        return { error: "Preencha ao menos um campo para atualizar" };
+      }
+      const usuario = await Usuario.findByPk(id);
+      if (!usuario) return { error: "Usuário não encontrado" };
+
+      if ((nome && nome.length < 3) || !validator.isAlpha(nome))
+        return { error: "Nome inválido" };
+
+      const emailExist = await Usuario.findOne({ where: { email: email } });
+
+      if (
+        !validator.isEmail(email) ||
+        (emailExist && emailExist.id !== usuario.id)
+      )
+        return {
+          error: "Email invalido",
+        };
+
+      if (
+        (senha || senha !== "") &&
+        !validator.isStrongPassword(senha, {
+          minLength: 8,
+          minLowercase: 1,
+          minUppercase: 1,
+          minNumbers: 3,
+          minSymbols: 1,
+        })
+      )
+        return { error: "Senha fraca" };
+
+      const nicknameExist = await Usuario.findOne({
+        where: { nickname: nickname },
+      });
+
+      if (
+        nickname.length < 3 ||
+        (nicknameExist && nicknameExist.id !== usuario.id)
+      )
+        return { error: "Nickname invalido" };
+
+      let senhaCriptografada = usuario.senha;
+      if (senha || senha !== "") {
+        senhaCriptografada = await bcrypt.hash(senha, 10);
+      }
       const usuarioAtualizado = await usuario.update({
         nome,
         email,
-        senha,
+        senha: senhaCriptografada,
         nickname,
         profissao,
       });
@@ -182,7 +189,7 @@ const usuarioService = {
       return { error: "Usuário não encontrado" };
     }
     usuario.dataValues.qtd_posts = await postService.qtdPosts(usuario.id);
-    console.log(usuario);
+
     return usuario;
   },
 };

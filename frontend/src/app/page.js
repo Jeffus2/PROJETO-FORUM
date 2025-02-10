@@ -77,6 +77,7 @@ export default function Login() {
         <Alert
           severity={notification.severity}
           onClose={() => setNotification({ ...notification, open: false })}
+          variant="filled"
         >
           {notification.message}
         </Alert>

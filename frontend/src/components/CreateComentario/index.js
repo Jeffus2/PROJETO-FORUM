@@ -1,3 +1,5 @@
+"use client";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -7,9 +9,53 @@ import {
   Avatar,
   Typography,
   Button,
+  Snackbar,
+  Alert,
 } from "@mui/material";
+import { criarComentario } from "@/service/comentarioService";
 
-export default function CreateComentario({ OnClick }) {
+export default function CreateComentario({ id }) {
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const [comentario, setComentario] = useState("");
+  const [notification, setNotification] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  const postarComentario = async () => {
+    try {
+      if (comentario.length < 1)
+        return setNotification({
+          open: true,
+          message: "numero de carac min não suficientes",
+          severity: "alert",
+        });
+
+      const resultado = await criarComentario(comentario, usuario.id, id);
+      if (resultado.error) {
+        setNotification({
+          open: true,
+          message: resultado.error,
+          severity: "error",
+        });
+        return;
+      }
+
+      setNotification({
+        open: true,
+        message: "Comentario enviado!",
+        severity: "success",
+      });
+    } catch (error) {
+      setNotification({
+        open: true,
+        message: `erro: ${error}`,
+        severity: "Error",
+      });
+    }
+  };
+
   return (
     <Container
       className="criarComentario"
@@ -22,6 +68,15 @@ export default function CreateComentario({ OnClick }) {
         marginTop: "2vh",
       }}
     >
+      <Snackbar open={notification.open} autoHideDuration={6000}>
+        <Alert
+          severity={notification.severity}
+          onClose={() => setNotification({ ...notification, open: false })}
+          variant="filled"
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
       <Box
         className="timeline"
         variant="outlined"
@@ -40,8 +95,12 @@ export default function CreateComentario({ OnClick }) {
       >
         <CardContent sx={{ display: "flex", flexDirection: "column" }}>
           <Box sx={{ display: "flex", flexDirection: "row" }}>
-            <Avatar sx={{ height: "4vh", width: "4vh" }}>T</Avatar>
-            <Typography sx={{ marginLeft: "1vh" }}>NICK</Typography>
+            <Avatar sx={{ height: "4vh", width: "4vh" }}>
+              {usuario.nickname[0].toUpperCase()}
+            </Avatar>
+            <Typography sx={{ marginLeft: "1vh" }}>
+              {usuario.nickname}
+            </Typography>
           </Box>
           <Box sx={{ marginTop: "1vh", backgroundColor: "#333" }}>
             <TextField
@@ -49,6 +108,10 @@ export default function CreateComentario({ OnClick }) {
               multiline
               rows={1}
               placeholder="Escreva um comentario"
+              value={comentario}
+              onChange={(e) => {
+                setComentario(e.target.value);
+              }}
               sx={{
                 width: "83.5%",
                 height: "7.2vh",
@@ -59,6 +122,7 @@ export default function CreateComentario({ OnClick }) {
             />
             <Button
               variant="contained"
+              onClick={postarComentario}
               sx={{
                 backgroundColor: "#232328",
                 marginLeft: "1vh",

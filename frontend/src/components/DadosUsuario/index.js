@@ -1,21 +1,21 @@
-"use client"
-import React,{useState} from "react";
+"use client";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { Avatar, Container, Typography, Button } from "@mui/material";
+
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { IconButton, Stack } from "@mui/material/";
 import EditIcon from "@mui/icons-material/Edit";
 
-
-
 export default function DadosUsuarios() {
+  const router = useRouter();
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const data = new Date(usuario.createdAt);
-  const dataFormatada = format(data, "dd'/'MM'/'yyyy, 'ás' HH:mm", {
+  const dataFormatada = format(data, "HH:mm '-' dd'/'MM'/'yyyy", {
     locale: ptBR,
   });
-
 
   return (
     <Container
@@ -50,7 +50,9 @@ export default function DadosUsuarios() {
         >
           {usuario.nickname[0].toUpperCase()}
         </Avatar>
-        <Typography sx={{marginLeft:"40px"}}><strong>Post: {usuario.qtd_posts}</strong></Typography>
+        <Typography sx={{ marginLeft: "40px" }}>
+          <strong>Post: {usuario.qtd_posts}</strong>
+        </Typography>
       </Container>
       <Container
         sx={{
@@ -115,7 +117,12 @@ export default function DadosUsuarios() {
           }}
         >
           <Stack>
-            <IconButton aria-label="Edit">
+            <IconButton
+              aria-label="Edit"
+              onClick={() => {
+                router.push(`/profile/${usuario.id}/edit`, 2000);
+              }}
+            >
               <EditIcon color="primary" />
             </IconButton>
           </Stack>

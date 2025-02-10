@@ -1,4 +1,4 @@
-import { ThumbUpAlt } from "@mui/icons-material";
+import { ThumbUpAlt, Favorite } from "@mui/icons-material";
 import {
   Container,
   Card,
@@ -65,7 +65,7 @@ export default function PostsMaisCurtidos({ posts }) {
                         sx={{ marginLeft: 1, fontSize: 15 }}
                         textAlign={"initial"}
                       >
-                        <ThumbUpAlt sx={{ marginTop: "0px" }}></ThumbUpAlt>
+                        <Favorite sx={{ marginTop: "0px" }} color="error" />
                       </Typography>
                       <Typography>
                         {post.qtd_curtidas}{" "}

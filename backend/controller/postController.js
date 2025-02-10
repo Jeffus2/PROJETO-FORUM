@@ -9,13 +9,14 @@ const postController = {
         return res.status(500).json({ status: "ERROR", message: post.error });
       }
       res.status(201).json(post);
-      console.log(post);
     } catch (error) {
       res.status(400).json({ mensagem: error.message });
     }
   },
   timelinePosts: async (req, res) => {
     try {
+      const usuario_id = req.params.usuario_id;
+
       const column = req.query.column || "createdAt";
       const order = req.query.order || "DESC";
       const limit = parseInt(req.query.limit) || 10;
@@ -23,6 +24,7 @@ const postController = {
       const page = parseInt(req.query.page) || 1;
 
       const posts = await postService.timelinePosts(
+        usuario_id,
         column,
         order,
         limit,
@@ -39,8 +41,9 @@ const postController = {
   },
   exibirPost: async (req, res) => {
     const { id } = req.params;
+    const { usuario_id } = req.query;
     try {
-      const post = await postService.exibirPost(id);
+      const post = await postService.exibirPost(id, usuario_id);
       if (post.error) {
         return res.status(500).json({ status: "ERROR", message: post.error });
       }
@@ -77,7 +80,6 @@ const postController = {
         return res.status(500).json({ status: "ERROR", message: post.error });
       }
       res.status(200).json(post);
-      console.log(post);
     } catch (error) {
       res.status(400).json({ mensagem: error.message });
     }
@@ -85,9 +87,9 @@ const postController = {
   curtirPost: async (req, res) => {
     try {
       const id = req.params.id;
-      const usuario_id = req.query.usuario_id;
+      const usuario_id = req.params.usuario_id;
       const resultado = await postService.curtirPost(id, usuario_id);
-      if (!resultado) {
+      if (!resultado || resultado.error) {
         return res
           .status(500)
           .json({ status: "ERROR", message: "Erro ao curtir post" });

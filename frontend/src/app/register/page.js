@@ -136,12 +136,12 @@ export default function Register() {
         <Typography variant="h4">Cadastro</Typography>
         <TextField
           required
-          label="Nome"
+          label="Primeiro Nome"
           variant="outlined"
           fullWidth
           margin="normal"
           value={nome}
-          onChange={(e) => setNome(e.target.value)}
+          onChange={(e) => setNome(e.target.value.replace(/\s/g, ""))}
         />
         <TextField
           required

@@ -2,22 +2,17 @@ const comentarioService = require("../service/comentarioService");
 
 const comentarioController = {
   criarComentario: async (req, res) => {
-    const {  conteudo, usuario_id, post_id } = req.body;
+    const conteudo = req.body;
 
     try {
-      const comentario = await comentarioService.criarComentario(
-        conteudo,
-        usuario_id,
-        post_id
-      );
-      console.log(comentario);
+      const comentario = await comentarioService.criarComentario(conteudo);
+
       if (comentario.error) {
         return res
           .status(500)
           .json({ status: "ERROR", message: comentario.error });
       }
       res.status(201).json(comentario);
-      console.log(comentario);
     } catch (error) {
       res.status(400).json({ mensagem: error.message });
     }
@@ -28,27 +23,23 @@ const comentarioController = {
         req.params.id,
         req.query.usuario_id
       );
-      if (!resultado) {
+      if (!resultado || resultado.error) {
         return res
           .status(500)
-          .json({ status: "ERROR", message: "Erro ao curtir comentário" });
+          .json({ status: "ERROR", message: resultado.error });
       }
-      res.status(204).json(resultado);
+      res.status(201).json(resultado);
     } catch (error) {
       res.status(400).json(error);
     }
   },
   timelineComentarios: async (req, res) => {
     try {
-      const post_id = req.params.id;
-      const columm = req.query.columm || createdAt;
-      const order = req.query.order || DESC;
+      const post_id = req.params.post_id;
       const page = parseInt(req.query.page) || 1;
 
       const comentarios = await comentarioService.timelineComentarios(
         post_id,
-        columm,
-        order,
         page
       );
       if (comentarios.error) {

@@ -1,11 +1,14 @@
 import axios from "axios";
 
-const linkAPI = `https://3333-codeanywhere-templates-e-53an7exilj.app.codeanywhere.com/posts`;
+const linkAPI = `https://miniature-carnival-x597p4v57q47c69x5-3333.app.github.dev/posts`;
+//`https://3333-codeanywhere-templates-e-53an7exilj.app.codeanywhere.com/posts`;
 
-export const timelinePosts = async (filter) => {
+const token = JSON.parse(localStorage.getItem("token"));
+
+export const timelinePosts = async (usuario_id, filter) => {
   try {
     const { columm, order, limit, where, page } = filter;
-    const resposta = await axios.get(`${linkAPI}/timeline`, {
+    const resposta = await axios.get(`${linkAPI}/${usuario_id}/timeline`, {
       params: {
         column: columm,
         order: order,
@@ -13,9 +16,9 @@ export const timelinePosts = async (filter) => {
         where: where,
         page: page,
       },
-      // headers: {
-      //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-      // },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
     return resposta.data;
   } catch (error) {
@@ -23,20 +26,18 @@ export const timelinePosts = async (filter) => {
   }
 };
 
-export const timelinePostsMaisCurtidos = async (filter) => {
+export const timelinePostsMaisCurtidos = async (usuario_id, filter) => {
   try {
     const { order, limit, where, page } = filter;
-    const resposta = await axios.get(`${linkAPI}/timeline`, {
+    const resposta = await axios.get(`${linkAPI}/${usuario_id}/timeline`, {
       params: {
         column: "qtd_curtidas",
         order: order,
-        limit: limit,
+        limit: 5,
         where: where,
         page: page,
       },
-      // headers: {
-      //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-      // },
+      headers: { Authorization: `Bearer ${token}` },
     });
     return resposta.data;
   } catch (error) {
@@ -44,20 +45,14 @@ export const timelinePostsMaisCurtidos = async (filter) => {
   }
 };
 
-export const getPost = async (id) => {
+export const getPost = async (id, usuario_id) => {
   try {
-    const resposta = await axios.get(`${linkAPI}/${id}`);
-    return resposta.data;
-  } catch (error) {
-    return { error: error.message };
-  }
-};
-
-export const createPost = async (post) => {
-  try {
-    const resposta = await axios.post(`${linkAPI}/`, post, {
+    const resposta = await axios.get(`${linkAPI}/${id}`, {
+      params: {
+        usuario_id: usuario_id,
+      },
       headers: {
-        Authorization: `${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return resposta.data;
@@ -66,11 +61,25 @@ export const createPost = async (post) => {
   }
 };
 
-export const updatePost = async (post) => {
+export const createPost = async (titulo, conteudo, usuario_id) => {
+  const post = { titulo, conteudo, usuario_id };
   try {
-    const resposta = await axios.put(`${linkAPI}/${post.id}`, post, {
+    const resposta = await axios.post(`${linkAPI}/`, post, {
       headers: {
-        Authorization: `${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return resposta.data;
+  } catch (error) {
+    return { error: error.message };
+  }
+};
+
+export const updatePost = async (post_id, novoPost) => {
+  try {
+    const resposta = await axios.put(`${linkAPI}/${post_id}`, novoPost, {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
     });
     return resposta.data;
@@ -83,7 +92,7 @@ export const deletePost = async (id) => {
   try {
     const resposta = await axios.delete(`${linkAPI}/${id}`, {
       headers: {
-        Authorization: `${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return resposta.data;
@@ -94,11 +103,13 @@ export const deletePost = async (id) => {
 
 export const curtirPost = async (id, usuario_id) => {
   try {
-    const resposta = await axios.put(`${linkAPI}/${id}/curtir/`,{
-      params:{
-        usuario_id: usuario_id
+    const resposta = await axios.post(
+      `${linkAPI}/${id}/curtir/${usuario_id}`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
-    });
+    );
     return resposta.data;
   } catch (error) {
     return { error: error.message };
